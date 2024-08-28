@@ -99,7 +99,7 @@ export const Home = () => {
         params: { query },
       });
 
-      if (response.date && response.date.notes) {
+      if (response.data && response.data.notes) {
         setIsSearch(true);
         setAllNotes(response.data.notes);
       }
