@@ -1,8 +1,5 @@
 {
     "version": 2,
-    "build": {
-      "outputDirectory": "out"
-    },
     "routes": [
       {
         "src": "/(.*)",
