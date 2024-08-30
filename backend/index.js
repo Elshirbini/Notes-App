@@ -14,7 +14,7 @@ app.use(
     origin: "*",
   })
 );
-app.use('/test' , (req,res,next) => {
+app.use('/' , (req,res,next) => {
   res.send("server running")
 })
 app.use(authRoutes);
