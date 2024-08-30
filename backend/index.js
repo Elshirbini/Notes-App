@@ -17,6 +17,7 @@ app.use(
 app.use('/' , (req,res,next) => {
   res.send("server running")
 })
+
 app.use(authRoutes);
 app.use(noteRoutes);
 
