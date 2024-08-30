@@ -1,1 +1,13 @@
-{ "version": 2, "rewrites": [{ "source": "/(.*)", "destination": "/index.js" }] }
+{
+    "version": 2,
+    "build": {
+      "command": "next build",
+      "outputDirectory": "out"
+    },
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "/index.html"
+      }
+    ]
+  }
