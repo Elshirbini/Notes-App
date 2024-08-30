@@ -124,7 +124,6 @@ export const Home = () => {
       );
 
       if (response.data && response.data.note) {
-        showToastMessage("Note Updated Successfully");
         getAllNotes();
       }
     } catch (error) {

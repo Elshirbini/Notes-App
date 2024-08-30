@@ -14,11 +14,6 @@ export const Toast = ({ isShown, message, type, onClose }) => {
       clearTimeout(timeoutId);
     };
   }, [onClose]);
-  function setIsShown() {
-    if (isShown) {
-      setTimeout((isShown = false), 1000);
-    }
-  }
   return (
     <div
       className={`absolute top-20 right-6 transition-all duration-400 ${

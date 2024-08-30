@@ -16,7 +16,6 @@ app.use(
 app.use(authRoutes);
 app.use(noteRoutes);
 
-
 mongoose
   .connect(process.env.MONGO_URL)
   .then(() => app.listen(8000, () => console.log("Connected")));
