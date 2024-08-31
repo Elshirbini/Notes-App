@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
-import { Navbar } from "../../components/Navbar/Navbar";
 import { Link, useNavigate } from "react-router-dom";
 import { PasswordInput } from "../../components/Input/PasswordInput";
 import { validateEmail } from "../../utils/helper";
 import axiosInstance from "../../utils/axiosInstance";
+import { NavbarNorm } from "../../components/NavbarNorm/NavbarNorm";
 
 export const Login = () => {
   const [email, setEmail] = useState("");
@@ -53,7 +53,7 @@ export const Login = () => {
   };
   return (
     <>
-      <Navbar />
+      <NavbarNorm/>
       <div className="flex items-center justify-center mt-28">
         <div className="w-96 border rounded bg-white px-7 py-10">
           <form onSubmit={handleLogin}>

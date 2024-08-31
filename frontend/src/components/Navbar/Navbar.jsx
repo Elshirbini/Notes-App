@@ -10,8 +10,6 @@ export const Navbar = ({ userInfo, onSearchNote, handleClearSearch }) => {
   // const [token, setToken] = useState("");
   const navigate = useNavigate();
 
-  const token = localStorage.token;
-
   const onLogout = () => {
     localStorage.clear();
     navigate("/login");
@@ -32,17 +30,17 @@ export const Navbar = ({ userInfo, onSearchNote, handleClearSearch }) => {
     <div className="bg-white flex items-center justify-between px-6 py-2  drop-shadow">
       <h2 className="text-xl font-medium text-black py-2">Notes</h2>
 
-      {token ? (
+      
         <SearchBar
           value={searchQuery}
           onChange={({ target }) => setSearchQuery(target.value)}
           handleSearch={handleSearch}
           onClearSearch={onClearSearch}
         />
-      ) : (
-        ""
-      )}
-      {token ? <ProfileInfo userInfo={userInfo} onLogout={onLogout} /> : ""}
+      
+        
+      
+      <ProfileInfo userInfo={userInfo} onLogout={onLogout} />
     </div>
   );
 };
