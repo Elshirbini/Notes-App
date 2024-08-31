@@ -1,7 +1,8 @@
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.js";
 import bcrypt from "bcryptjs";
-import nodemailer from 'nodemailer'
+import nodemailer from "nodemailer";
+import { validationResult } from "express-validator";
 
 var transporter = nodemailer.createTransport({
   service: "gmail",
@@ -11,8 +12,6 @@ var transporter = nodemailer.createTransport({
   },
 });
 
-
-
 export const signup = async (req, res, next) => {
   const { fullName, email, password } = req.body;
   const mailOptions = {
@@ -21,6 +20,7 @@ export const signup = async (req, res, next) => {
     subject: "Welcome for you in my Notes APP",
     text: " Your account Created Successfully",
   };
+
 
   if (!fullName) {
     return res
@@ -72,6 +72,10 @@ export const signup = async (req, res, next) => {
     });
   } catch (err) {
     console.log(err);
+    if(!err.statusCode === 500 ){
+      return err.statusCode = 500
+    }
+    next(err)
     return res.status(500).json({
       error: true,
       message: "Internal Error",
@@ -81,7 +85,7 @@ export const signup = async (req, res, next) => {
 
 export const login = async (req, res, next) => {
   const { email, password } = req.body;
-  
+
   if (!email) {
     return res.status(400).json({ error: true, message: "Email is required" });
   }
@@ -99,23 +103,22 @@ export const login = async (req, res, next) => {
     }
 
     const hashedPass = await bcrypt.compare(password, user.password);
-    if(!hashedPass){
+    if (!hashedPass) {
       return res.status(401).json({ error: true, message: "Wrong Password" });
     }
-      const accessToken = jwt.sign(
-        { user: user },
-        process.env.ACCESS_TOKEN_SECRET,
-        {
-          expiresIn: "30m",
-        }
-      );
-      return res.status(200).json({
-        error: false,
-        email,
-        accessToken,
-        message: "Login Successfully",
-      });
-    
+    const accessToken = jwt.sign(
+      { user: user },
+      process.env.ACCESS_TOKEN_SECRET,
+      {
+        expiresIn: "30m",
+      }
+    );
+    return res.status(200).json({
+      error: false,
+      email,
+      accessToken,
+      message: "Login Successfully",
+    });
   } catch (err) {
     console.log(err);
     return res.status(500).json({
@@ -152,3 +155,70 @@ export const getUser = async (req, res, next) => {
     });
   }
 };
+
+export const resetPass = async (req, res, next) => {
+  const { email } = req.body;
+  const { user } = req.user;
+
+  try {
+    const userReset = await  User.findOne({ email: email, _id: user._id });
+    if (!userReset) {
+      return res.status(404).json({
+        error: true,
+        message: "This email has no account",
+      });
+    }
+
+    const mailOptions = {
+      from: "ahmedalshirbini33@gmail.com",
+      to: email,
+      subject: "Password Reset",
+      html: `
+    <p>You requested a password reset</p>
+    <p>Click this <a href='http://localhost:3000/reset/${userReset._id}'>link</a> to set a new password</p>
+    `,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log("Email sent: " + info.response);
+      }
+    });
+
+    return res.status(200).json({
+      error: false,
+      message: "Reset password link is sent",
+      user: userReset,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
+export const newPassword = async(req,res,next) => {
+  const userId = req.params.userId
+  const {password} = req.body
+
+  try{
+    const user = await User.findById(userId)
+    if(!user){
+      return res.status(401).json({
+        message : "An Error occurred"
+      })
+    }
+    const hashedPass = await bcrypt.hash(password ,12)
+    user.password = hashedPass
+    await user.save()
+    return res.status(200).json({
+      error : false,
+      user,
+      message : "Password has been Changed successfully"
+    })
+
+  }catch(error){
+    console.log(error)
+  }
+}
