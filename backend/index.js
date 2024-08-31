@@ -7,16 +7,15 @@ import { authRoutes } from "./routes/auth.js";
 import { noteRoutes } from "./routes/note.js";
 const app = express();
 
-
 app.use(express.json());
 app.use(
   cors({
     origin: "*",
   })
 );
-app.use('/' , (req,res,next) => {
-  res.send("server running")
-})
+app.get("/", (req, res, next) => {
+  res.send(`Hello World`);
+});
 
 app.use(authRoutes);
 app.use(noteRoutes);
