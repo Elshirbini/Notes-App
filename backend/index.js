@@ -11,11 +11,11 @@ app.use(express.json());
 app.use(
   cors({
     origin: "*",
-    credentials : true
+    credentials: true,
   })
 );
-app.get("/hello", (req, res, next) => {
-  res.json('Hello World');
+app.get("/", (req, res, next) => {
+  res.json("Hello World");
 });
 
 app.use(authRoutes);
