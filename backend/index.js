@@ -11,9 +11,10 @@ app.use(express.json());
 app.use(
   cors({
     origin: "*",
+    credentials : true
   })
 );
-app.get("/", (req, res, next) => {
+app.get("/hello", (req, res, next) => {
   res.send(`Hello World`);
 });
 
