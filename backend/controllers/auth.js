@@ -161,8 +161,8 @@ export const resetPass = async (req, res, next) => {
 
 
   try {
-    const userReset = await  User.findOne({ email: email });
-    if (!userReset) {
+    const user = await  User.findOne({ email: email });
+    if (!user) {
       return res.status(404).json({
         error: true,
         message: "This email has no account",
@@ -175,7 +175,7 @@ export const resetPass = async (req, res, next) => {
       subject: "Password Reset",
       html: `
     <p>You requested a password reset</p>
-    <p>Click this <a href='http://localhost:3000/reset/${userReset._id}'>link</a> to set a new password</p>
+    <p>Click this <a href='http://localhost:3000/reset/${user._id}'>link</a> to set a new password</p>
     `,
     };
 
