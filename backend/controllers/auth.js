@@ -190,13 +190,12 @@ export const resetPass = async (req, res, next) => {
     return res.status(200).json({
       error: false,
       message: "Reset password link is sent",
-      user: userReset,
+      user: user,
     });
   } catch (error) {
     console.log(error);
   }
 };
-
 
 export const newPassword = async(req,res,next) => {
   const userId = req.params.userId
