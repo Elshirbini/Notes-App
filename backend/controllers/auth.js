@@ -2,7 +2,11 @@ import jwt from "jsonwebtoken";
 import { User } from "../models/user.js";
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
+import crypto from "crypto";
+import { error } from "console";
 
+var code = crypto.randomBytes(3).toString("hex");
+console.log(code);
 
 var transporter = nodemailer.createTransport({
   service: "gmail",
@@ -20,7 +24,6 @@ export const signup = async (req, res, next) => {
     subject: "Welcome for you in my Notes APP",
     text: " Your account Created Successfully",
   };
-
 
   if (!fullName) {
     return res
@@ -72,10 +75,10 @@ export const signup = async (req, res, next) => {
     });
   } catch (err) {
     console.log(err);
-    if(!err.statusCode === 500 ){
-      return err.statusCode = 500
+    if (!err.statusCode === 500) {
+      return (err.statusCode = 500);
     }
-    next(err)
+    next(err);
     return res.status(500).json({
       error: true,
       message: "Internal Error",
@@ -156,12 +159,10 @@ export const getUser = async (req, res, next) => {
   }
 };
 
-export const resetPass = async (req, res, next) => {
+export const sendCode = async (req, res, next) => {
   const { email } = req.body;
-
-
   try {
-    const user = await  User.findOne({ email: email });
+    const user = await User.findOne({ email: email });
     if (!user) {
       return res.status(404).json({
         error: true,
@@ -174,8 +175,8 @@ export const resetPass = async (req, res, next) => {
       to: email,
       subject: "Password Reset",
       html: `
-    <p>You requested a password reset</p>
-    <p>Click this <a href='http://localhost:3000/reset/${user._id}'>link</a> to set a new password</p>
+    <p>Copy The Code</p>
+    <p>The code to reset your password<span>${code}</span></p>
     `,
     };
 
@@ -189,7 +190,7 @@ export const resetPass = async (req, res, next) => {
 
     return res.status(200).json({
       error: false,
-      message: "Reset password link is sent",
+      message: "Code is sent successfully",
       user: user,
     });
   } catch (error) {
@@ -197,27 +198,37 @@ export const resetPass = async (req, res, next) => {
   }
 };
 
-export const newPassword = async(req,res,next) => {
-  const userId = req.params.userId
-  const {password} = req.body
+export const authCode = async (req, res, next) => {
+  const { isCodeTrue } = req.body;
 
-  try{
-    const user = await User.findById(userId)
-    if(!user){
-      return res.status(401).json({
-        message : "An Error occurred"
-      })
-    }
-    const hashedPass = await bcrypt.hash(password ,12)
-    user.password = hashedPass
-    await user.save()
-    return res.status(200).json({
-      error : false,
-      user,
-      message : "Password has been Changed successfully"
-    })
-
-  }catch(error){
-    console.log(error)
+  if (isCodeTrue !== code) {
+    return res.status(401).json({
+      error: true,
+      message: "The code is invalid",
+    });
   }
-}
+};
+
+export const newPassword = async (req, res, next) => {
+  const userId = req.params.userId;
+  const { password } = req.body;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(401).json({
+        message: "An Error occurred",
+      });
+    }
+    const hashedPass = await bcrypt.hash(password, 12);
+    user.password = hashedPass;
+    await user.save();
+    return res.status(200).json({
+      error: false,
+      user,
+      message: "Password has been Changed successfully",
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};

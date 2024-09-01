@@ -1,5 +1,5 @@
 import express from "express";
-import { login, signup, getUser, resetPass, newPassword } from "../controllers/auth.js";
+import { login, signup, getUser, newPassword, sendCode } from "../controllers/auth.js";
 import { authenticateToken } from "../utilities.js";
 
 const router = express.Router();
@@ -10,7 +10,7 @@ router.post("/signup", signup);
 
 router.post("/login", login);
 
-router.post("/reset", resetPass);
+router.post("/sendcode", sendCode);
 
 router.post("/reset/:userId" , newPassword);
 
