@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { User } from "../models/user.js";
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
-import { validationResult } from "express-validator";
+
 
 var transporter = nodemailer.createTransport({
   service: "gmail",
