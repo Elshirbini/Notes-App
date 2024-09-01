@@ -15,7 +15,7 @@ app.use(
   })
 );
 app.get("/hello", (req, res, next) => {
-  res.send(`Hello World`);
+  res.json('Hello World');
 });
 
 app.use(authRoutes);
