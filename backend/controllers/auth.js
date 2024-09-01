@@ -158,10 +158,10 @@ export const getUser = async (req, res, next) => {
 
 export const resetPass = async (req, res, next) => {
   const { email } = req.body;
-  const { user } = req.user;
+
 
   try {
-    const userReset = await  User.findOne({ email: email, _id: user._id });
+    const userReset = await  User.findOne({ email: email });
     if (!userReset) {
       return res.status(404).json({
         error: true,
