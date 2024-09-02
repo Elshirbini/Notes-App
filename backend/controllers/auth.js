@@ -3,7 +3,6 @@ import { User } from "../models/user.js";
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
-import { error } from "console";
 
 var code = crypto.randomBytes(3).toString("hex");
 console.log(code);
@@ -176,7 +175,7 @@ export const sendCode = async (req, res, next) => {
       subject: "Password Reset",
       html: `
     <p>Copy The Code</p>
-    <p>The code to reset your password<span>${code}</span></p>
+    <p>The code to reset your password <span>${code}</span> </p>
     `,
     };
 
@@ -199,16 +198,16 @@ export const sendCode = async (req, res, next) => {
 };
 
 export const authCode = async (req, res, next) => {
-  const { theCode } = req.body;
+  const { isCodeTrue } = req.body;
 
-  if (theCode !== code) {
+  if (isCodeTrue !== code) {
     return res.status(401).json({
       error: true,
       message: "The code is invalid",
     });
   }
 
-  res.json({ message: "sent" });
+  res.status(200).json({ message: "The code is true" });
 };
 
 export const newPassword = async (req, res, next) => {

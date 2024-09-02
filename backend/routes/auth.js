@@ -21,6 +21,6 @@ router.post("/sendcode", sendCode);
 
 router.post("/authcode", authCode);
 
-router.put("/reset/:userId", newPassword);
+router.put("/resetpass/:userId", newPassword);
 
 export const authRoutes = router;

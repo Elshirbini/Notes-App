@@ -146,7 +146,7 @@ export const updateNotePinned = async (req, res, next) => {
   }
 };
 
-export const getSearchedNotes = async (req,res,next) => {
+export const getSearchedNotes = async (req, res, next) => {
   const { user } = req.user;
   const { query } = req.query;
   if (!query) {
