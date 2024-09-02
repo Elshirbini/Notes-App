@@ -199,14 +199,16 @@ export const sendCode = async (req, res, next) => {
 };
 
 export const authCode = async (req, res, next) => {
-  const { isCodeTrue } = req.body;
+  const { theCode } = req.body;
 
-  if (isCodeTrue !== code) {
+  if (theCode !== code) {
     return res.status(401).json({
       error: true,
       message: "The code is invalid",
     });
   }
+
+  res.json({ message: "sent" });
 };
 
 export const newPassword = async (req, res, next) => {
