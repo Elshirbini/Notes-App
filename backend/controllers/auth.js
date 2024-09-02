@@ -4,9 +4,6 @@ import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
 
-var code = crypto.randomBytes(3).toString("hex");
-console.log(code);
-
 var transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -157,8 +154,14 @@ export const getUser = async (req, res, next) => {
     });
   }
 };
-
+var code;
 export const sendCode = async (req, res, next) => {
+  function generateCode() {
+    var generatedCode;
+    generatedCode = crypto.randomBytes(3).toString("hex");
+    code = generatedCode;
+    return code;
+  }
   const { email } = req.body;
   try {
     const user = await User.findOne({ email: email });
@@ -168,14 +171,13 @@ export const sendCode = async (req, res, next) => {
         message: "This email has no account",
       });
     }
-
     const mailOptions = {
       from: "ahmedalshirbini33@gmail.com",
       to: email,
       subject: "Password Reset",
       html: `
     <p>Copy The Code</p>
-    <p>The code to reset your password <span>${code}</span> </p>
+    <p>The code to reset your password <span>${generateCode()}</span> </p>
     `,
     };
 
@@ -189,7 +191,7 @@ export const sendCode = async (req, res, next) => {
 
     return res.status(200).json({
       error: false,
-      message: "Code is sent successfully",
+      message: "sent",
       user: user,
     });
   } catch (error) {
@@ -203,11 +205,11 @@ export const authCode = async (req, res, next) => {
   if (isCodeTrue !== code) {
     return res.status(401).json({
       error: true,
-      message: "The code is invalid",
+      message: "fail",
     });
   }
 
-  res.status(200).json({ message: "The code is true" });
+  res.status(200).json({ message: "done" });
 };
 
 export const newPassword = async (req, res, next) => {

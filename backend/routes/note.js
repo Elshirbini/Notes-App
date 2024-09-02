@@ -19,7 +19,7 @@ router.put("/edit-note/:noteId", authenticateToken, editNote);
 
 router.delete("/delete-note/:noteId", authenticateToken, deleteNote);
 
-router.put("/update-note-pinned/:noteId", authenticateToken, updateNotePinned);
+router.patch("/update-note-pinned/:noteId", authenticateToken, updateNotePinned);
 
 router.get("/search-notes/", authenticateToken, getSearchedNotes);
 

@@ -1,62 +1,79 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 
-import { validateEmail } from "../../utils/helper";
-
-import axiosInstance from "../../utils/axiosInstance";
-
 import { Link, useNavigate } from "react-router-dom";
+
+import axios from "axios";
+
+import { useFormik } from "formik";
+import * as Yup from "yup";
+
 import { NavbarNorm } from "../../components/NavbarNorm/NavbarNorm";
-import { PasswordInput } from "../../components/Input/PasswordInput";
 
 const ResetPassword = () => {
-  const [email, setEmail] = useState("");
-  const [error, setError] = useState(null);
+  let navigate = useNavigate();
+  let [error, setError] = useState("");
+  let [loading, setLoading] = useState(true);
 
-  const navigate = useNavigate();
-
-  const handleReset = async (e) => {
-    e.preventDefault();
-
-    if (!validateEmail(email)) {
-      setError("Please enter a valid email address");
-      return;
-    }
-
-    try {
-      const response = await axiosInstance.post("/sendcode", {
-        email: email,
+  function sendDataToApi(values) {
+    setLoading(false);
+    axios
+      .post("http://localhost:8000/sendCode", values)
+      .then(({ data }) => {
+        console.log(data);
+        navigate("/validation");
+      })
+      .catch((err) => {
+        setError(err.response.data.message);
+        setLoading(true);
       });
-    } catch (error) {
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
-        setError(error.response.data.message);
-      } else {
-        setError("An unexpected error occurred. Please try again");
-      }
-    }
-  };
+  }
+  function validationSchema() {
+    let schema = new Yup.object({
+      email: Yup.string().email().required(),
+    });
+    return schema;
+  }
+  let resetpassword = useFormik({
+    initialValues: {
+      email: "",
+    },
+    validationSchema,
+    onSubmit: (values) => {
+      sendDataToApi(values);
+    },
+  });
+
   return (
     <>
       <NavbarNorm />
       <div className="flex items-center justify-center mt-28">
         <div className="w-96 border rounded bg-white px-7 py-10">
-          <form onSubmit={handleReset}>
+          <form onSubmit={resetpassword.handleSubmit}>
             <h4 className="text-2xl mb-7">Reset Password</h4>
             <input
               type="text"
-              placeholder="Email"
+              placeholder="enter your email"
+              onBlur={resetpassword.handleBlur}
+              onChange={resetpassword.handleChange}
               className="input-box"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              id="email"
+              name="email"
             />
 
-            {error && <p className="text-red-500 text-xs pb-1">{error}</p>}
+            {resetpassword.errors.email && resetpassword.touched.email ? (
+              <div className="p-2 mb-4 text-sm text-red-800 rounded-lg bg-red-50  dark:text-red-400">
+                {resetpassword.errors.email}
+              </div>
+            ) : (
+              ""
+            )}
 
-            <button type="submit" className="btn-primary">
+            <button
+              type="submit"
+              className="btn-primary"
+              disabled={!(resetpassword.dirty && resetpassword.isValid)}
+            >
               Send Code
             </button>
           </form>
