@@ -201,7 +201,7 @@ export const sendCode = async (req, res, next) => {
 
 export const authCode = async (req, res, next) => {
   const { isCodeTrue } = req.body;
-
+  console.log(isCodeTrue);
   if (isCodeTrue !== code) {
     return res.status(401).json({
       error: true,
