@@ -220,7 +220,7 @@ export const newPassword = async (req, res, next) => {
     const user = await User.findById(userId);
     if (!user) {
       return res.status(401).json({
-        message: "An Error occurred",
+        message: "UserNotFound",
       });
     }
     const hashedPass = await bcrypt.hash(password, 12);
