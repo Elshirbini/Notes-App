@@ -31,13 +31,13 @@ const CodeValidation = () => {
   }
   function validationSchema() {
     let schema = new Yup.object({
-      code: Yup.string().required(),
+      isCodeTrue: Yup.string().required(),
     });
     return schema;
   }
   let codevalidation = useFormik({
     initialValues: {
-      code: "",
+      isCodeTrue: "",
     },
     validationSchema,
     onSubmit: (values) => {
@@ -59,13 +59,13 @@ const CodeValidation = () => {
               onBlur={codevalidation.handleBlur}
               onChange={codevalidation.handleChange}
               className="input-box"
-              id="code"
-              name="code"
+              id="isCodeTrue"
+              name="isCodeTrue"
             />
 
-            {codevalidation.errors.code && codevalidation.touched.code ? (
+            {codevalidation.errors.isCodeTrue && codevalidation.touched.isCodeTrue ? (
               <div className="p-2 mb-4 text-sm text-red-800 rounded-lg bg-red-50  dark:text-red-400">
-                {codevalidation.errors.code}
+                {codevalidation.errors.isCodeTrue}
               </div>
             ) : (
               ""

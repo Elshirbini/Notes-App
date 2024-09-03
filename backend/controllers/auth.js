@@ -107,7 +107,7 @@ export const login = async (req, res, next) => {
     }
     const accessToken = jwt.sign(
       { user: user },
-      process.env.ACCESS_TOKEN_SECRET,
+      ACCESS_TOKEN_SECRET = fa17722d20746447eaa38c85d7fb6a1824719bfc037dafb27fb4ad00a8f6d78b,
       {
         expiresIn: "30m",
       }
@@ -201,7 +201,7 @@ export const sendCode = async (req, res, next) => {
 
 export const authCode = async (req, res, next) => {
   const { isCodeTrue } = req.body;
-  console.log(isCodeTrue);
+
   if (isCodeTrue !== code) {
     return res.status(401).json({
       error: true,
