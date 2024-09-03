@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
 
+var userId;
 var transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -107,7 +108,7 @@ export const login = async (req, res, next) => {
     }
     const accessToken = jwt.sign(
       { user: user },
-      ACCESS_TOKEN_SECRET = fa17722d20746447eaa38c85d7fb6a1824719bfc037dafb27fb4ad00a8f6d78b,
+      process.env.ACCESS_TOKEN_SECRET,
       {
         expiresIn: "30m",
       }
@@ -171,6 +172,7 @@ export const sendCode = async (req, res, next) => {
         message: "This email has no account",
       });
     }
+    userId = user._id;
     const mailOptions = {
       from: "ahmedalshirbini33@gmail.com",
       to: email,
@@ -192,7 +194,6 @@ export const sendCode = async (req, res, next) => {
     return res.status(200).json({
       error: false,
       message: "sent",
-      user: user,
     });
   } catch (error) {
     console.log(error);
@@ -209,7 +210,7 @@ export const authCode = async (req, res, next) => {
     });
   }
 
-  res.status(200).json({ message: "done" });
+  res.status(200).json({ message: "done", userId: userId });
 };
 
 export const newPassword = async (req, res, next) => {

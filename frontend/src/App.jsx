@@ -17,7 +17,7 @@ const routes = (
       <Route path="/signup" exact element={<SignUp />} />
       <Route path="/reset" exact element={<ResetPassword />} />
       <Route path="/validation" exact element={<CodeValidation />} />
-      <Route path="/newpassword" exact element={<NewPassword />} />
+      <Route path="/newpassword/:userId" exact element={<NewPassword />} />
     </Routes>
   </Router>
 );

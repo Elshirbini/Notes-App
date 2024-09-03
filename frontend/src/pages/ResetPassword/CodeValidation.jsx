@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { Link, useNavigate } from "react-router-dom";
 
@@ -14,6 +14,7 @@ const CodeValidation = () => {
   let navigate = useNavigate();
   let [error, setError] = useState("");
   let [loading, setLoading] = useState(true);
+  let [timer, setTimer] = useState(10);
 
   function sendDataToApi(values) {
     setLoading(false);
@@ -22,7 +23,7 @@ const CodeValidation = () => {
       .then(({ data }) => {
         console.log(data);
         if (data.message === "done") {
-          navigate("/newpassword");
+          navigate(`/newpassword/${data.userId}`);
         }
       })
       .catch((err) => {
@@ -46,6 +47,15 @@ const CodeValidation = () => {
     },
   });
 
+  function handleTimer() {
+    setInterval(() => {
+      setTimer((timer -= 1 / 2));
+    }, 1000);
+  }
+  useEffect(() => {
+    handleTimer();
+  }, []);
+
   return (
     <>
       <NavbarNorm />
@@ -63,9 +73,10 @@ const CodeValidation = () => {
               name="isCodeTrue"
             />
 
-            {codevalidation.errors.isCodeTrue && codevalidation.touched.isCodeTrue ? (
+            {codevalidation.errors.isCodeTrue &&
+            codevalidation.touched.isCodeTrue ? (
               <div className="p-2 mb-4 text-sm text-red-800 rounded-lg bg-red-50  dark:text-red-400">
-                {codevalidation.errors.isCodeTrue}
+                The Input Is Empty !
               </div>
             ) : (
               ""
@@ -78,6 +89,20 @@ const CodeValidation = () => {
             >
               Submit Code
             </button>
+            <p className="m-2">
+              <button
+                className={
+                  timer <= 0
+                    ? "text-blue-800 	text-decoration-line: underline"
+                    : ""
+                }
+                type="submit"
+                disabled={timer >= 0}
+              >
+                re-send code
+              </button>{" "}
+              {timer <= 0 ? "" : "in " + timer}
+            </p>
           </form>
         </div>
       </div>
