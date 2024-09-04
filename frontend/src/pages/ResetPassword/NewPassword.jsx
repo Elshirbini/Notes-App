@@ -69,7 +69,7 @@ export default function NewPassword() {
               className="btn-primary"
               disabled={!(handleNewPassword.dirty && handleNewPassword.isValid)}
             >
-              Submit New Password
+              Submit
             </button>
           </form>
         </div>
