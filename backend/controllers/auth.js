@@ -3,6 +3,7 @@ import { User } from "../models/user.js";
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
+import { error } from "console";
 
 var userId;
 var transporter = nodemailer.createTransport({
@@ -165,7 +166,7 @@ export const sendCode = async (req, res, next) => {
     return code;
   }
   const { email } = req.body;
-  handleEmail = email
+  handleEmail = email;
   try {
     const user = await User.findOne({ email: email });
     if (!user) {
@@ -202,7 +203,7 @@ export const sendCode = async (req, res, next) => {
   }
 };
 
-export const resendCode = async(req,res,next) => {
+export const resendCode = async (req, res, next) => {
   function generateCode() {
     var generatedCode;
     generatedCode = crypto.randomBytes(3).toString("hex");
@@ -242,9 +243,7 @@ export const resendCode = async(req,res,next) => {
   } catch (error) {
     console.log(error);
   }
-
-
-}
+};
 
 export const authCode = async (req, res, next) => {
   const { isCodeTrue } = req.body;
@@ -262,6 +261,12 @@ export const authCode = async (req, res, next) => {
 export const newPassword = async (req, res, next) => {
   const userId = req.params.userId;
   const { newPassword } = req.body;
+  if(newPassword === undefined){
+    res.status(404).json({
+      error : true ,
+      message : 'Input field is empty'
+    })
+  }
 
   try {
     const user = await User.findById(userId);
