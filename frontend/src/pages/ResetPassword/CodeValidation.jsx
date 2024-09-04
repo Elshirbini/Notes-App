@@ -3,23 +3,25 @@ import React, { useState, useEffect } from "react";
 
 import { Link, useNavigate } from "react-router-dom";
 
+import { BASE_URL } from "../../utils/constants";
+
 import axios from "axios";
 
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
 import { NavbarNorm } from "../../components/NavbarNorm/NavbarNorm";
+import ResendCode from "../../components/ResendButton/ResendCode";
 
 const CodeValidation = () => {
   let navigate = useNavigate();
   let [error, setError] = useState("");
   let [loading, setLoading] = useState(true);
-  let [timer, setTimer] = useState(10);
 
   function sendDataToApi(values) {
     setLoading(false);
     axios
-      .post("http://localhost:8000/authcode", values)
+      .post(`${BASE_URL}/authcode`, values)
       .then(({ data }) => {
         console.log(data);
         if (data.message === "done") {
@@ -46,15 +48,6 @@ const CodeValidation = () => {
       console.log(values);
     },
   });
-
-  function handleTimer() {
-    setInterval(() => {
-      setTimer((timer -= 1 / 2));
-    }, 1000);
-  }
-  useEffect(() => {
-    handleTimer();
-  }, []);
 
   return (
     <>
@@ -89,21 +82,8 @@ const CodeValidation = () => {
             >
               Submit Code
             </button>
-            <p className="m-2">
-              <button
-                className={
-                  timer <= 0
-                    ? "text-blue-800 	text-decoration-line: underline"
-                    : ""
-                }
-                type="submit"
-                disabled={timer >= 0}
-              >
-                re-send code
-              </button>{" "}
-              {timer <= 0 ? "" : "in " + timer}
-            </p>
           </form>
+          <ResendCode />
         </div>
       </div>
     </>

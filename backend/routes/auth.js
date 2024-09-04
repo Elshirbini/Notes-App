@@ -6,6 +6,7 @@ import {
   newPassword,
   sendCode,
   authCode,
+  resendCode,
 } from "../controllers/auth.js";
 import { authenticateToken } from "../utilities.js";
 
@@ -18,6 +19,8 @@ router.post("/signup", signup);
 router.post("/login", login);
 
 router.post("/sendcode", sendCode);
+
+router.post("/resendcode", resendCode);
 
 router.post("/authcode", authCode);
 

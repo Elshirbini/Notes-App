@@ -156,6 +156,7 @@ export const getUser = async (req, res, next) => {
   }
 };
 var code;
+var handleEmail;
 export const sendCode = async (req, res, next) => {
   function generateCode() {
     var generatedCode;
@@ -164,6 +165,7 @@ export const sendCode = async (req, res, next) => {
     return code;
   }
   const { email } = req.body;
+  handleEmail = email
   try {
     const user = await User.findOne({ email: email });
     if (!user) {
@@ -200,6 +202,50 @@ export const sendCode = async (req, res, next) => {
   }
 };
 
+export const resendCode = async(req,res,next) => {
+  function generateCode() {
+    var generatedCode;
+    generatedCode = crypto.randomBytes(3).toString("hex");
+    code = generatedCode;
+    return code;
+  }
+  try {
+    const user = await User.findOne({ email: handleEmail });
+    if (!user) {
+      return res.status(404).json({
+        error: true,
+        message: "This email has no account",
+      });
+    }
+    const mailOptions = {
+      from: "ahmedalshirbini33@gmail.com",
+      to: handleEmail,
+      subject: "Password Reset",
+      html: `
+    <p>Copy The Code</p>
+    <p>The code to reset your password <span>${generateCode()}</span> </p>
+    `,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log("Email sent: again " + info.response);
+      }
+    });
+
+    return res.status(200).json({
+      error: false,
+      message: "sentAgain",
+    });
+  } catch (error) {
+    console.log(error);
+  }
+
+
+}
+
 export const authCode = async (req, res, next) => {
   const { isCodeTrue } = req.body;
 
@@ -215,7 +261,7 @@ export const authCode = async (req, res, next) => {
 
 export const newPassword = async (req, res, next) => {
   const userId = req.params.userId;
-  const { password } = req.body;
+  const { newPassword } = req.body;
 
   try {
     const user = await User.findById(userId);
@@ -224,7 +270,7 @@ export const newPassword = async (req, res, next) => {
         message: "UserNotFound",
       });
     }
-    const hashedPass = await bcrypt.hash(password, 12);
+    const hashedPass = await bcrypt.hash(newPassword, 12);
     user.password = hashedPass;
     await user.save();
     return res.status(200).json({
