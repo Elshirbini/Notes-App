@@ -6,6 +6,8 @@ import crypto from "crypto";
 import { error } from "console";
 
 var userId;
+var code;
+var handleEmail;
 var transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -156,8 +158,6 @@ export const getUser = async (req, res, next) => {
     });
   }
 };
-var code;
-var handleEmail;
 export const sendCode = async (req, res, next) => {
   function generateCode() {
     var generatedCode;
@@ -261,11 +261,11 @@ export const authCode = async (req, res, next) => {
 export const newPassword = async (req, res, next) => {
   const userId = req.params.userId;
   const { newPassword } = req.body;
-  if(newPassword === undefined){
+  if (newPassword === undefined) {
     res.status(404).json({
-      error : true ,
-      message : 'Input field is empty'
-    })
+      error: true,
+      message: "Input field is empty",
+    });
   }
 
   try {
