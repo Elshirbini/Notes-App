@@ -27,9 +27,9 @@ export default function NewPassword() {
       navigate("/login");
     }
   }
-  useEffect(() => {
-    putDataToApi();
-  }, []);
+  // useEffect(() => {
+  //   putDataToApi();
+  // }, []);
 
   function validationSchema() {
     let schema = new Yup.object({
