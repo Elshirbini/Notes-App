@@ -293,7 +293,6 @@ export const newPassword = async (req, res, next) => {
 export const deleteAcc = async(req,res,next) => {
   const { password } = req.body
   const { user } = req.user
-  console.log(user)
   try {
     const hashedPass = await bcrypt.compare(password , user.password)
     if(!hashedPass){
