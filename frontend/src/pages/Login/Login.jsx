@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { PasswordInput } from "../../components/Input/PasswordInput";
 import { validateEmail } from "../../utils/helper";
@@ -51,9 +51,19 @@ export const Login = () => {
       }
     }
   };
+  function handleToken() {
+    const token = localStorage.getItem("token");
+    if (token) {
+      localStorage.clear();
+    }
+  }
+  useEffect(() => {
+    handleToken();
+  }, []);
+
   return (
     <>
-      <NavbarNorm />
+      {/* <NavbarNorm /> */}
       <div className="flex items-center justify-center mt-28">
         <div className="w-96 border rounded bg-white px-7 py-10">
           <form onSubmit={handleLogin}>

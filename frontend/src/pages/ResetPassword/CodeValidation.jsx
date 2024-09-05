@@ -13,7 +13,7 @@ import * as Yup from "yup";
 import { NavbarNorm } from "../../components/NavbarNorm/NavbarNorm";
 import ResendCode from "../../components/ResendButton/ResendCode";
 
-const CodeValidation = () => {
+export const CodeValidation = () => {
   let navigate = useNavigate();
   let [error, setError] = useState("");
   let [loading, setLoading] = useState(true);
@@ -51,7 +51,7 @@ const CodeValidation = () => {
 
   return (
     <>
-      <NavbarNorm />
+      {/* <NavbarNorm /> */}
       <div className="flex items-center justify-center mt-28">
         <div className="w-96 border rounded bg-white px-7 py-10">
           <form onSubmit={codevalidation.handleSubmit}>

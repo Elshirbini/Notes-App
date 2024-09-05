@@ -7,7 +7,7 @@ import {
   editNote,
   getNotes,
   updateNotePinned,
-  getSearchedNotes
+  getSearchedNotes,
 } from "../controllers/note.js";
 const router = express.Router();
 
@@ -19,7 +19,11 @@ router.put("/edit-note/:noteId", authenticateToken, editNote);
 
 router.delete("/delete-note/:noteId", authenticateToken, deleteNote);
 
-router.patch("/update-note-pinned/:noteId", authenticateToken, updateNotePinned);
+router.patch(
+  "/update-note-pinned/:noteId",
+  authenticateToken,
+  updateNotePinned
+);
 
 router.get("/search-notes/", authenticateToken, getSearchedNotes);
 

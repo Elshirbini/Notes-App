@@ -1,27 +1,62 @@
 /* eslint-disable no-unused-vars */
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import MainLayout from "./Layout/MainLayout";
+
+import AuthLayout from "./Layout/AuthLayout";
+
+import ProtectedRoutes from "./components/ProtectedRoutes/ProtectedRoutes";
+
 import { Home } from "./pages/Home/Home";
 import { Login } from "./pages/Login/Login";
 import { SignUp } from "./pages/SignUp/SignUp";
 import ResetPassword from "./pages/ResetPassword/ResetPassword";
-import CodeValidation from "./pages/ResetPassword/CodeValidation";
+import { CodeValidation } from "./pages/ResetPassword/CodeValidation";
 import NewPassword from "./pages/ResetPassword/NewPassword";
 
-const routes = (
-  <Router>
-    <Routes>
-      <Route path="/" exact element={<Login />} />
-      <Route path="/login" exact element={<Login />} />
-      <Route path="/dashboard" exact element={<Home />} />
-      <Route path="/signup" exact element={<SignUp />} />
-      <Route path="/reset" exact element={<ResetPassword />} />
-      <Route path="/validation" exact element={<CodeValidation />} />
-      <Route path="/newpassword/:userId" exact element={<NewPassword />} />
-    </Routes>
-  </Router>
-);
+export default function App() {
+  let routes = createBrowserRouter([
+    {
+      path: "/",
+      element: <MainLayout />,
+      children: [
+        { index: true, element: <Home /> },
+        {
+          path: "dashboard",
+          element: (
+            <ProtectedRoutes>
+              <Home />
+            </ProtectedRoutes>
+          ),
+        },
+      ],
+    },
+    {
+      path: "/",
+      element: <AuthLayout />,
+      children: [
+        { path: "login", element: <Login /> },
+        { path: "signup", element: <SignUp /> },
+        {
+          path: "reset",
+          element: <ResetPassword />,
+        },
+        {
+          path: "validation",
+          element: <CodeValidation />,
+        },
+        {
+          path: "newpassword/:userId",
+          element: <NewPassword />,
+        },
+      ],
+    },
+  ]);
 
-export const App = () => {
-  return <div>{routes}</div>;
-};
+  return (
+    <>
+      <RouterProvider router={routes} />
+    </>
+  );
+}
