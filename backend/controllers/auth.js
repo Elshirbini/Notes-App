@@ -1,9 +1,10 @@
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.js";
+import { Note } from "../models/note.js";
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
-import { error } from "console";
+
 
 var userId;
 var code;
@@ -287,3 +288,39 @@ export const newPassword = async (req, res, next) => {
     console.log(error);
   }
 };
+
+
+export const deleteAcc = async(req,res,next) => {
+  const { password } = req.body
+  const { user } = req.user
+  console.log(user)
+  try {
+    const hashedPass = await bcrypt.compare(password , user.password)
+    if(!hashedPass){
+      return res.status(401).json({
+        message : 'Password is false'
+      })
+    }
+    const isUser = await User.findById(user._id)
+    const notes  = await Note.find({userId : user._id})
+    if(!isUser){
+      return res.status(404).json({
+        message : 'User Not Found'
+      })
+    }
+    if(!notes){
+      return res.status(404).json({
+        message : 'Notes Not Found'
+      })
+    }
+   await User.findByIdAndDelete(isUser._id)
+   await Note.findByIdAndDelete(notes._id)
+
+   res.status(200).json({
+    message: "Account has been deleted"
+   })
+
+  } catch (error) {
+    console.log(error)
+  }
+}

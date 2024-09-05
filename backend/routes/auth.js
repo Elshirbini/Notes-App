@@ -7,6 +7,7 @@ import {
   sendCode,
   authCode,
   resendCode,
+  deleteAcc,
 } from "../controllers/auth.js";
 import { authenticateToken } from "../utilities.js";
 
@@ -25,5 +26,7 @@ router.post("/resendcode", resendCode);
 router.post("/authcode", authCode);
 
 router.put("/resetpass/:userId", newPassword);
+
+router.delete("/deleteAcc" ,authenticateToken , deleteAcc);
 
 export const authRoutes = router;
