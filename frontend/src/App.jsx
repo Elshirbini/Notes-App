@@ -14,7 +14,7 @@ import { SignUp } from "./pages/SignUp/SignUp";
 import ResetPassword from "./pages/ResetPassword/ResetPassword";
 import { CodeValidation } from "./pages/ResetPassword/CodeValidation";
 import NewPassword from "./pages/ResetPassword/NewPassword";
-import DeleteAccount from "./pages/DeleteAccount/DeleteAccount";
+// import DeleteAccount from "./pages/DeleteAccount/DeleteAccount";
 
 export default function App() {
   let routes = createBrowserRouter([

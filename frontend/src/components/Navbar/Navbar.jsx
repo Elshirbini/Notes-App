@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { ProfileInfo } from "../Cards/ProfileInfo";
 import { useNavigate } from "react-router-dom";
 import { SearchBar } from "../SearchBar/SearchBar";
-import Dropdown from "../Dropdown/Dropdown";
+// import Dropdown from "../Dropdown/Dropdown";
 
 export const Navbar = ({ userInfo, onSearchNote, handleClearSearch }) => {
   const [searchQuery, setSearchQuery] = useState("");
