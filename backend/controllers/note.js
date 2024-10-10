@@ -1,5 +1,4 @@
 import { Note } from "../models/note.js";
-import { User } from "../models/user.js";
 
 export const getNotes = async (req, res, next) => {
   const { user } = req.user;
