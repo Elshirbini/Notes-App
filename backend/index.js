@@ -25,5 +25,6 @@ app.use(authRoutes);
 app.use(noteRoutes);
 
 mongoose
-  .connect(process.env.MONGO_URL)
+  // .connect(process.env.MONGO_URL)
+  .connect("mongodb+srv://Elshirbini:Aa5527980098@cluster0.ufoahrq.mongodb.net/notes?retryWrites=true&w=majority&appName=Cluster0")
   .then(() => app.listen(8000, () => console.log("Connected")));
