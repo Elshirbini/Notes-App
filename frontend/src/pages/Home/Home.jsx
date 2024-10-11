@@ -116,7 +116,7 @@ export const Home = () => {
   const updateIsPinned = async (noteData) => {
     const noteId = noteData._id;
     try {
-      const response = await axiosInstance.put(
+      const response = await axiosInstance.patch(
         "/update-note-pinned/" + noteId,
         {
           isPinned: !noteData.isPinned,
