@@ -4,7 +4,7 @@ import { Note } from "../models/note.js";
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
-
+import { validationResult } from "express-validator";
 var userId;
 var code;
 var handleEmail;
@@ -18,6 +18,10 @@ var transporter = nodemailer.createTransport({
 
 export const signup = async (req, res, next) => {
   const { fullName, email, password } = req.body;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
   const mailOptions = {
     from: "ahmedalshirbini33@gmail.com",
     to: email,
@@ -25,31 +29,12 @@ export const signup = async (req, res, next) => {
     text: " Your account Created Successfully",
   };
 
-  if (!fullName) {
-    return res
-      .status(400)
-      .json({ error: true, message: "Full Name is required" });
-  }
-  if (!email) {
-    return res.status(400).json({ error: true, message: "Email is required" });
-  }
-  if (!password) {
-    return res
-      .status(400)
-      .json({ error: true, message: "Password is required" });
-  }
   try {
-    const isUser = await User.findOne({ email: email });
-
-    if (isUser) {
-      return res.json({ error: true, message: "User already exist" });
-    }
-
     const hashedPass = await bcrypt.hash(password, 12);
 
-    const user = new User({
-      fullName: fullName,
-      email: email,
+    const user = await User.create({
+      fullName,
+      email,
       password: hashedPass,
     });
 
