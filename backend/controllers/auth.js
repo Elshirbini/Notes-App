@@ -138,51 +138,6 @@ export const getUser = async (req, res, next) => {
   }
 };
 
-// export const sendCode = async (req, res, next) => {
-//   function generateCode() {
-//     var generatedCode;
-//     generatedCode = crypto.randomBytes(3).toString("hex");
-//     code = generatedCode;
-//     return code;
-//   }
-//   const { email } = req.body;
-//   handleEmail = email;
-//   try {
-//     const user = await User.findOne({ email: email });
-//     if (!user) {
-//       return res.status(404).json({
-//         error: true,
-//         message: "This email has no account",
-//       });
-//     }
-//     userId = user._id;
-//     const mailOptions = {
-//       from: "ahmedalshirbini33@gmail.com",
-//       to: email,
-//       subject: "Password Reset",
-//       html: `
-//     <p>Copy The Code</p>
-//     <p>The code to reset your password <span>${generateCode()}</span> </p>
-//     `,
-//     };
-
-//     transporter.sendMail(mailOptions, (error, info) => {
-//       if (error) {
-//         console.log(error);
-//       } else {
-//         console.log("Email sent: " + info.response);
-//       }
-//     });
-
-//     return res.status(200).json({
-//       error: false,
-//       message: "sent",
-//     });
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
-
 export const sendCode = async (req, res, next) => {
   try {
     const { email } = req.body;
