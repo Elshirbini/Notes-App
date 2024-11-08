@@ -16,6 +16,12 @@ const user = new Schema(
       type: String,
       required: true,
     },
+    cryptoToken: {
+      type: String,
+    },
+    cryptoTokenExpires: {
+      type: Date,
+    },
   },
   { timestamps: true }
 );

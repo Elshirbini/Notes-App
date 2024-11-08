@@ -1,9 +1,9 @@
 import { Note } from "../models/note.js";
 
 export const getNotes = async (req, res, next) => {
-  const { user } = req.user;
-
   try {
+    const { user } = req.user;
+
     const notes = await Note.find({ userId: user._id }).sort({ isPinned: -1 });
     if (!notes) {
       return res.status(400).json({ error: true, message: "Note not found" });
@@ -22,25 +22,23 @@ export const getNotes = async (req, res, next) => {
   }
 };
 export const addNote = async (req, res, next) => {
-  const { title, content, tags } = req.body;
-  const { user } = req.user;
-
-  if (!title) {
-    return res.status(400).json({ error: true, message: "Title is required" });
-  }
-  if (!content) {
-    return res
-      .status(400)
-      .json({ error: true, message: "Content is required" });
-  }
-
   try {
-    const note = new Note({
-      title: title,
-      content: content,
+    const { title, content, tags } = req.body;
+    const { user } = req.user;
+
+    if (!title || !content) {
+      return res
+        .status(400)
+        .json({ error: true, message: "Title and content is required" });
+    }
+
+    const note = await Note.create({
+      title,
+      content,
       tags: tags || [],
       userId: user._id,
     });
+
     await note.save();
 
     res.status(200).json({
@@ -57,27 +55,30 @@ export const addNote = async (req, res, next) => {
   }
 };
 export const editNote = async (req, res, next) => {
-  const noteId = req.params.noteId;
-  const { title, content, tags, isPinned } = req.body;
-  const { user } = req.user;
-
-  if (!title && !content && !tags) {
-    return res
-      .status(400)
-      .json({ error: true, message: "No changes provided" });
-  }
-
   try {
-    const note = await Note.findOne({ _id: noteId, userId: user._id });
+    const { noteId } = req.params;
+    const { title, content, tags, isPinned } = req.body;
+    const { user } = req.user;
+
+    if (!title && !content && !tags) {
+      return res
+        .status(400)
+        .json({ error: true, message: "No changes provided" });
+    }
+    const note = await Note.findOneAndUpdate(
+      { _id: noteId, userId: user._id },
+      {
+        title,
+        content,
+        tags,
+        isPinned,
+      },
+      { new: true, runValidators: true }
+    );
+
     if (!note) {
       return res.status(400).json({ error: true, message: "Note not found" });
     }
-    if (title) note.title = title;
-    if (content) note.content = content;
-    if (tags) note.tags = tags;
-    if (isPinned) note.isPinned = isPinned;
-
-    await note.save();
 
     return res.status(200).json({
       error: false,
@@ -93,16 +94,14 @@ export const editNote = async (req, res, next) => {
   }
 };
 export const deleteNote = async (req, res, next) => {
-  const noteId = req.params.noteId;
-  const { user } = req.user;
-
   try {
-    const note = await Note.findOne({ _id: noteId, userId: user._id });
+    const { noteId } = req.params;
+    const { user } = req.user;
+    const note = await Note.findOneAndDelete({ _id: noteId, userId: user._id });
     if (!note) {
       return res.status(400).json({ error: true, message: "Note not found" });
     }
 
-    await note.deleteOne({ _id: noteId, userId: user._id });
     return res.status(200).json({
       error: false,
       message: "Note deleted successfully",
@@ -117,19 +116,19 @@ export const deleteNote = async (req, res, next) => {
 };
 
 export const updateNotePinned = async (req, res, next) => {
-  const noteId = req.params.noteId;
-  const { isPinned } = req.body;
-  const { user } = req.user;
-
   try {
-    const note = await Note.findOne({ _id: noteId, userId: user._id });
+    const { noteId } = req.params;
+    const { isPinned } = req.body;
+    const { user } = req.user;
+
+    const note = await Note.findOneAndUpdate(
+      { _id: noteId, userId: user._id },
+      { isPinned: isPinned || false },
+      { new: true, runValidators: true }
+    );
     if (!note) {
       return res.status(400).json({ error: true, message: "Note not found" });
     }
-
-    note.isPinned = isPinned || false;
-
-    await note.save();
 
     return res.status(200).json({
       error: false,
@@ -146,20 +145,21 @@ export const updateNotePinned = async (req, res, next) => {
 };
 
 export const getSearchedNotes = async (req, res, next) => {
-  const { user } = req.user;
-  const { query } = req.query;
-  if (!query) {
-    return res
-      .status(400)
-      .json({ error: true, message: "Search query is required" });
-  }
   try {
+    const { user } = req.user;
+    const { query } = req.query;
+
+    if (!query) {
+      return res
+        .status(400)
+        .json({ error: true, message: "Search query is required" });
+    }
+
+    const regEx = new RegExp(query, "i");
+
     const matchingNotes = await Note.find({
       userId: user._id,
-      $or: [
-        { title: { $regex: new RegExp(query, "i") } },
-        { content: { $regex: new RegExp(query, "i") } },
-      ],
+      $or: [{ title: regEx }, { content: regEx }],
     });
 
     return res.json({

@@ -49,11 +49,27 @@ router.post("/login", login);
 
 router.post("/sendcode", sendCode);
 
-router.post("/resendcode", resendCode);
+router.post("/resendcode/:userId", resendCode);
 
-router.post("/authcode", authCode);
+router.post("/authcode/:userId", authCode);
 
-router.put("/resetpass/:userId", newPassword);
+router.put(
+  "/resetpass/:userId",
+  [
+    body("newPassword")
+      .isLength({ min: 5, max: 10 })
+      .withMessage("Password length should be from 5 to 10 chars")
+      .matches(/[a-z]/)
+      .withMessage("Password should be contains chars from a to z ")
+      .matches(/[A-Z]/)
+      .withMessage("Password should be contains chars from A to Z ")
+      .matches(/[0-9]/)
+      .withMessage("Password should be contains numbers ")
+      .matches(/[!@#$%^&*(),.?":{}|<>]/)
+      .withMessage("Password should be contains special chars "),
+  ],
+  newPassword
+);
 
 router.delete("/deleteAcc", authenticateToken, deleteAcc);
 

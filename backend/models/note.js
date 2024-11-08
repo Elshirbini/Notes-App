@@ -20,7 +20,8 @@ const note = new Schema({
         default : false,
     },
     userId : {
-        type: String,
+        type: mongoose.Types.ObjectId,
+        ref : "users",
         required : true,
     },
 } , {timestamps : true})
