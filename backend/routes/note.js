@@ -1,6 +1,5 @@
 import express from "express";
-
-import { authenticateToken } from "../utilities.js";
+import { authenticateToken } from "../middlewares/authenticateToken.js";
 import {
   addNote,
   deleteNote,

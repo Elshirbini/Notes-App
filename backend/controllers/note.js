@@ -1,4 +1,5 @@
 import { Note } from "../models/note.js";
+import { ApiError } from "../utils/apiError.js";
 
 export const getNotes = async (req, res, next) => {
   try {
@@ -6,7 +7,7 @@ export const getNotes = async (req, res, next) => {
 
     const notes = await Note.find({ userId: user._id }).sort({ isPinned: -1 });
     if (!notes) {
-      return res.status(400).json({ error: true, message: "Note not found" });
+      return next(new ApiError("Note not found", 404));
     }
     return res.json({
       error: false,
@@ -14,11 +15,7 @@ export const getNotes = async (req, res, next) => {
       message: "All notes retrieved",
     });
   } catch (err) {
-    console.log(err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal Error",
-    });
+    next(new ApiError(err, 500));
   }
 };
 export const addNote = async (req, res, next) => {
@@ -27,9 +24,7 @@ export const addNote = async (req, res, next) => {
     const { user } = req.user;
 
     if (!title || !content) {
-      return res
-        .status(400)
-        .json({ error: true, message: "Title and content is required" });
+      return next(new ApiError("Title and content is required", 400));
     }
 
     const note = await Note.create({
@@ -47,11 +42,7 @@ export const addNote = async (req, res, next) => {
       message: "Note added successfully",
     });
   } catch (err) {
-    console.log(err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal Error",
-    });
+    next(new ApiError(err, 500));
   }
 };
 export const editNote = async (req, res, next) => {
@@ -61,9 +52,7 @@ export const editNote = async (req, res, next) => {
     const { user } = req.user;
 
     if (!title && !content && !tags) {
-      return res
-        .status(400)
-        .json({ error: true, message: "No changes provided" });
+      return next(new ApiError("No changes provided", 404));
     }
     const note = await Note.findOneAndUpdate(
       { _id: noteId, userId: user._id },
@@ -77,7 +66,7 @@ export const editNote = async (req, res, next) => {
     );
 
     if (!note) {
-      return res.status(400).json({ error: true, message: "Note not found" });
+      return next(new ApiError("Note not found", 404));
     }
 
     return res.status(200).json({
@@ -86,11 +75,7 @@ export const editNote = async (req, res, next) => {
       message: "Note updated successfully",
     });
   } catch (err) {
-    console.log(err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal Error",
-    });
+    next(new ApiError(err, 500));
   }
 };
 export const deleteNote = async (req, res, next) => {
@@ -99,7 +84,7 @@ export const deleteNote = async (req, res, next) => {
     const { user } = req.user;
     const note = await Note.findOneAndDelete({ _id: noteId, userId: user._id });
     if (!note) {
-      return res.status(400).json({ error: true, message: "Note not found" });
+      return next(new ApiError("Note not found", 404));
     }
 
     return res.status(200).json({
@@ -107,11 +92,7 @@ export const deleteNote = async (req, res, next) => {
       message: "Note deleted successfully",
     });
   } catch (err) {
-    console.log(err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal Error",
-    });
+    next(new ApiError(err, 500));
   }
 };
 
@@ -127,7 +108,7 @@ export const updateNotePinned = async (req, res, next) => {
       { new: true, runValidators: true }
     );
     if (!note) {
-      return res.status(400).json({ error: true, message: "Note not found" });
+      return next(new ApiError("Note not found", 404));
     }
 
     return res.status(200).json({
@@ -136,11 +117,7 @@ export const updateNotePinned = async (req, res, next) => {
       message: "Note Pinned updated successfully",
     });
   } catch (err) {
-    console.log(err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal Error",
-    });
+    next(new ApiError(err, 500));
   }
 };
 
@@ -150,9 +127,7 @@ export const getSearchedNotes = async (req, res, next) => {
     const { query } = req.query;
 
     if (!query) {
-      return res
-        .status(400)
-        .json({ error: true, message: "Search query is required" });
+      return next(new ApiError("Search query is required", 400));
     }
 
     const regEx = new RegExp(query, "i");
@@ -167,11 +142,7 @@ export const getSearchedNotes = async (req, res, next) => {
       notes: matchingNotes,
       message: "Notes matching the search query retrieved successfully",
     });
-  } catch (error) {
-    console.log(err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal Error",
-    });
+  } catch (err) {
+    next(new ApiError(err, 500));
   }
 };

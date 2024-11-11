@@ -1,10 +1,11 @@
 import jwt from "jsonwebtoken";
-import { User } from "../models/user.js";
-import { Note } from "../models/note.js";
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
 import { validationResult } from "express-validator";
+import { User } from "../models/user.js";
+import { Note } from "../models/note.js";
+import { ApiError } from "../utils/apiError.js";
 
 var transporter = nodemailer.createTransport({
   service: "gmail",
@@ -18,7 +19,7 @@ export const signup = async (req, res, next) => {
   const { fullName, email, password } = req.body;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+    return next(new ApiError(errors.array()[0].msg, 400));
   }
   const mailOptions = {
     from: "ahmedalshirbini33@gmail.com",
@@ -57,15 +58,7 @@ export const signup = async (req, res, next) => {
       message: "Registration Successfully",
     });
   } catch (err) {
-    console.log(err);
-    if (!err.statusCode === 500) {
-      return (err.statusCode = 500);
-    }
-    next(err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal Error",
-    });
+    next(new ApiError(err, 500));
   }
 };
 
@@ -74,20 +67,18 @@ export const login = async (req, res, next) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res
-        .status(400)
-        .json({ error: true, message: "Email and Password are required" });
+      return next(new ApiError("Email and Password are required", 400));
     }
 
     const user = await User.findOne({ email: email });
 
     if (!user) {
-      return res.status(400).json({ error: true, message: "User Not Found" });
+      return next(new ApiError("User not found", 404));
     }
 
     const hashedPass = await bcrypt.compare(password, user.password);
     if (!hashedPass) {
-      return res.status(401).json({ error: true, message: "Wrong Password" });
+      return next(new ApiError("Wrong password", 401));
     }
     const accessToken = jwt.sign(
       { user: user },
@@ -103,11 +94,7 @@ export const login = async (req, res, next) => {
       message: "Login Successfully",
     });
   } catch (err) {
-    console.log(err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal Error",
-    });
+    next(new ApiError(err, 500));
   }
 };
 
@@ -118,7 +105,7 @@ export const getUser = async (req, res, next) => {
     const userDoc = await User.findById(user._id);
 
     if (!userDoc) {
-      return res.status(401).json({ error: "User not found" });
+      return next(new ApiError("User not found", 404));
     }
 
     return res.status(200).json({
@@ -130,11 +117,7 @@ export const getUser = async (req, res, next) => {
       },
     });
   } catch (err) {
-    console.log(err);
-    return res.status(500).json({
-      error: true,
-      message: "Internal Error",
-    });
+    next(new ApiError(err, 500));
   }
 };
 
@@ -147,7 +130,7 @@ export const sendCode = async (req, res, next) => {
 
     const user = await User.findOne({ email: email });
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return next(new ApiError("User not found", 404));
     }
 
     const mailOptions = {
@@ -179,11 +162,7 @@ export const sendCode = async (req, res, next) => {
 
     res.status(200).json({ user: userData });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      error: true,
-      message: "Internal Error",
-    });
+    next(new ApiError(error, 500));
   }
 };
 
@@ -197,10 +176,7 @@ export const resendCode = async (req, res, next) => {
 
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({
-        error: true,
-        message: "This email has no account",
-      });
+      return next(new ApiError("This email has no account", 404));
     }
 
     const mailOptions = {
@@ -235,11 +211,7 @@ export const resendCode = async (req, res, next) => {
       user: userData,
     });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      error: true,
-      message: "Internal Error",
-    });
+    next(new ApiError(error, 500));
   }
 };
 
@@ -257,16 +229,12 @@ export const authCode = async (req, res, next) => {
     });
 
     if (!user) {
-      return res.status(404).json({ error: "Wrong verification code " });
+      return next(new ApiError("Wrong verification code ", 404));
     }
 
     res.status(200).json({ message: "done", userId: userId });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      error: true,
-      message: "Internal Error",
-    });
+    next(new ApiError(error, 500));
   }
 };
 
@@ -277,7 +245,7 @@ export const newPassword = async (req, res, next) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      return res.status(404).json({ error: errors.array()[0].msg });
+      return next(new ApiError(errors.array()[0].msg, 404));
     }
 
     const hashedPass = await bcrypt.hash(newPassword, 12);
@@ -285,7 +253,7 @@ export const newPassword = async (req, res, next) => {
     const isSet = await User.findOne({ _id: userId, password: hashedPass });
 
     if (isSet) {
-      return res.status(400).json({ error: "This password is already set." });
+      return next(new ApiError("This password is already set.", 400));
     }
 
     const user = await User.findByIdAndUpdate(
@@ -299,9 +267,7 @@ export const newPassword = async (req, res, next) => {
     );
 
     if (!user) {
-      return res.status(401).json({
-        message: "User not found",
-      });
+      return next(new ApiError("User not found", 404));
     }
 
     return res.status(200).json({
@@ -310,11 +276,7 @@ export const newPassword = async (req, res, next) => {
       message: "Password has been Changed successfully",
     });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      error: true,
-      message: "Internal Error",
-    });
+    next(new ApiError(error, 500));
   }
 };
 
@@ -325,31 +287,21 @@ export const deleteAcc = async (req, res, next) => {
 
     const hashedPass = await bcrypt.compare(password, user.password);
     if (!hashedPass) {
-      return res.status(401).json({
-        message: "Password is false",
-      });
+      return next(new ApiError("Wrong password", 401));
     }
     const userDoc = await User.findByIdAndDelete(user._id);
     const notes = await Note.findOneAndDelete({ userId: user._id });
     if (!userDoc) {
-      return res.status(404).json({
-        message: "User Not Found",
-      });
+      return next(new ApiError("User not found", 404));
     }
     if (!notes) {
-      return res.status(404).json({
-        message: "Notes Not Found",
-      });
+      return next(new ApiError("Note not found", 404));
     }
 
     res.status(200).json({
       message: "Account has been deleted",
     });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      error: true,
-      message: "Internal Error",
-    });
+    next(new ApiError(error, 500));
   }
 };

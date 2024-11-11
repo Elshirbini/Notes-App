@@ -5,6 +5,8 @@ import cors from "cors";
 import mongoose from "mongoose";
 import { authRoutes } from "./routes/auth.js";
 import { noteRoutes } from "./routes/note.js";
+import { ApiError } from "./utils/apiError.js";
+import { errorHandling } from "./middlewares/errorHandling.js";
 const app = express();
 
 app.use(
@@ -24,7 +26,13 @@ app.get("/", (req, res, next) => {
 app.use(authRoutes);
 app.use(noteRoutes);
 
+app.all("*", (req, res, next) => {
+  next(new ApiError(`Can't find this route : ${req.originalUrl}`, 400));
+});
+
+app.use(errorHandling);
+
 mongoose
-  // .connect(process.env.MONGO_URL)
-  .connect("mongodb+srv://Elshirbini:Aa5527980098@cluster0.ufoahrq.mongodb.net/notes?retryWrites=true&w=majority&appName=Cluster0")
-  .then(() => app.listen(8000, () => console.log("Connected")));
+  .connect(process.env.MONGO_URL)
+  .then(() => app.listen(8000, () => console.log("Connected")))
+  .catch((err) => console.log(err));

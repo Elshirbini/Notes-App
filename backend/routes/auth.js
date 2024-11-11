@@ -1,4 +1,5 @@
 import express from "express";
+import { body } from "express-validator";
 import {
   login,
   signup,
@@ -9,8 +10,7 @@ import {
   resendCode,
   deleteAcc,
 } from "../controllers/auth.js";
-import { authenticateToken } from "../utilities.js";
-import { body } from "express-validator";
+import { authenticateToken } from "../middlewares/authenticateToken.js";
 import { User } from "../models/user.js";
 const router = express.Router();
 
