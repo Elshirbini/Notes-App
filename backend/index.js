@@ -21,7 +21,7 @@ app.use("/favicon.ico", express.static("./favicon.ico"));
 
 app.use(express.json());
 app.get("/", (req, res, next) => {
-  res.json("Hello World");
+  res.json("Hello World!!!");
 });
 
 app.use(authRoutes);
