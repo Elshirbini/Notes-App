@@ -11,7 +11,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "https:/notes-app-front-gamma.vercel.app",
+    origin: "https://notes-app-two-blue.vercel.app/",
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true,
   })
