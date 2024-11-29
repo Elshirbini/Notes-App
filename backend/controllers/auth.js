@@ -49,7 +49,7 @@ export const signup = asyncHandler(async (req, res, next) => {
     }
   });
 
-  return res.status(200).json({
+  return res.status(201).json({
     error: false,
     user,
     accessToken,
@@ -65,7 +65,6 @@ export const login = asyncHandler(async (req, res, next) => {
   }
 
   const user = await User.findOne({ email: email });
-
   if (!user) throw new ApiError("User not found", 404);
 
   const hashedPass = await bcrypt.compare(password, user.password);
@@ -90,7 +89,6 @@ export const getUser = asyncHandler(async (req, res, next) => {
   const { user } = req.user;
 
   const userDoc = await User.findById(user._id);
-
   if (!userDoc) throw new ApiError("User not found", 404);
 
   return res.status(200).json({
@@ -173,10 +171,14 @@ export const resendCode = asyncHandler(async (req, res, next) => {
     }
   });
 
-  const userData = await User.findByIdAndUpdate(userId, {
-    cryptoToken: hashedToken,
-    cryptoTokenExpires: Date.now() + 5 * 60 * 1000,
-  });
+  const userData = await User.findByIdAndUpdate(
+    userId,
+    {
+      cryptoToken: hashedToken,
+      cryptoTokenExpires: Date.now() + 5 * 60 * 1000,
+    },
+    { new: true, runValidators: true }
+  );
 
   return res.status(200).json({
     error: false,
