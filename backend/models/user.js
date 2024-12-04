@@ -1,6 +1,4 @@
-import mongoose from "mongoose";
-
-const Schema = mongoose.Schema;
+import { Schema, model } from "mongoose";
 
 const user = new Schema(
   {
@@ -16,14 +14,10 @@ const user = new Schema(
       type: String,
       required: true,
     },
-    cryptoToken: {
-      type: String,
-    },
-    cryptoTokenExpires: {
-      type: Date,
-    },
+    cryptoToken: String,
+    cryptoTokenExpires: Date,
   },
   { timestamps: true }
 );
 
-export const User = mongoose.model("users", user);
+export const User = model("users", user);
