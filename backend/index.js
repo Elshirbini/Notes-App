@@ -26,9 +26,6 @@ app.use(compression());
 app.use(xss());
 app.use(mongoSanitize());
 
-app.get("/", (req, res, next) => {
-  res.json("Hello World!!!");
-});
 app.use(authRoutes);
 app.use(noteRoutes);
 

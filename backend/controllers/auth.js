@@ -91,7 +91,7 @@ export const getUser = asyncHandler(async (req, res, next) => {
   const userDoc = await User.findById(user._id);
   if (!userDoc) throw new ApiError("User not found", 404);
 
-  return res.status(200).json({
+    res.status(200).json({
     user: {
       fullName: userDoc.fullName,
       email: userDoc.email,
